@@ -178,6 +178,23 @@ public class MainActivity extends AppCompatActivity
             return true;
         }
 
+        if (id == R.id.it_unLockAll) {
+            for (App app: applist) {
+                app.setState(0);
+            }
+            adapter.notifyDataSetChanged();
+            appDao.updateInTx(applist);
+        }
+
+        if (id == R.id.it_lockAll) {
+            for (App app: applist) {
+                app.setState(1);
+            }
+            adapter.notifyDataSetChanged();
+            appDao.updateInTx(applist);
+        }
+
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -187,21 +204,25 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_app_lock) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_photo_video_vault) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_background) {
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_theme) {
+
+        } else if (id == R.id.nav_fake_cover) {
+
+        } else if (id == R.id.nav_setting) {
+
+        } else if (id == R.id.nav_about) {
 
         } else if (id == R.id.nav_share) {
 
-        } else if (id == R.id.nav_send) {
-
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -239,8 +260,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onQueryTextChange(String newText) {
-
-        List<App> items = appDao.queryBuilder().where(AppDao.Properties.Name.like("%" + newText + "%")).list();
+        List<App> items = appDao.queryBuilder().where(AppDao.Properties.Name.like("%" + newText + "%")).orderAsc(AppDao.Properties.Name).list();
         adapter.setItems(items);
 
         return true;

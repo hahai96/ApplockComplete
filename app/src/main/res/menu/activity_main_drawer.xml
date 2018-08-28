@@ -5,33 +5,43 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
+            android:id="@+id/nav_app_lock"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
+            android:title="AppLock" />
         <item
-            android:id="@+id/nav_gallery"
+            android:id="@+id/nav_photo_video_vault"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
+            android:title="Photo Video Vault" />
         <item
-            android:id="@+id/nav_slideshow"
+            android:id="@+id/nav_background"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
+            android:title="Background" />
         <item
-            android:id="@+id/nav_manage"
+            android:id="@+id/nav_theme"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:title="Theme" />
+
+        <item
+            android:id="@+id/nav_fake_cover"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Fake Cover" />
     </group>
 
     <item android:title="Communicate">
         <menu>
             <item
-                android:id="@+id/nav_share"
+                android:id="@+id/nav_setting"
                 android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:title="Setting" />
             <item
-                android:id="@+id/nav_send"
+                android:id="@+id/nav_about"
                 android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:title="About" />
+
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Share" />
         </menu>
     </item>
 

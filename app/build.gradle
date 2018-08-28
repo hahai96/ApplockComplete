@@ -43,4 +43,5 @@ dependencies {
     implementation 'com.android.support:design:26.1.0'
     implementation 'com.github.AnthonyFermin:DropDownView:1.0.1'
     implementation 'com.github.dongjunkun:DropDownMenu:1.0.4'
+    compile 'com.github.skydoves:colorpickerpreference:1.0.4'
 }
