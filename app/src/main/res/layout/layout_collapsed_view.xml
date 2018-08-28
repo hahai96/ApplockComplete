@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/txtCollapsed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sort by app name (A->Z)"
+            android:layout_margin="8dp"
+            android:padding="8dp"
+            android:textSize="14sp"
+            android:layout_alignParentLeft="true"/>
+
+        <ImageView
+            android:id="@+id/imgArrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_down_24dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="8dp"/>
+
+    </RelativeLayout>
+</layout>
