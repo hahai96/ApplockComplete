@@ -10,6 +10,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -43,5 +44,9 @@ dependencies {
     implementation 'com.android.support:design:26.1.0'
     implementation 'com.github.AnthonyFermin:DropDownView:1.0.1'
     implementation 'com.github.dongjunkun:DropDownMenu:1.0.4'
-    compile 'com.github.skydoves:colorpickerpreference:1.0.4'
+    implementation 'com.github.skydoves:colorpickerpreference:1.0.4'
+    implementation 'com.github.QuadFlask:colorpicker:0.0.13'
+    implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.karumi:dexter:4.2.0'
+    implementation 'com.github.bumptech.glide:glide:3.7.0'
 }

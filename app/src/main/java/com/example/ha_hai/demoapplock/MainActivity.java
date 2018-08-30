@@ -1,11 +1,16 @@
 package com.example.ha_hai.demoapplock;
 
 import android.animation.ObjectAnimator;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -32,6 +37,9 @@ import com.example.ha_hai.demoapplock.Common.CommonAttributte;
 import com.example.ha_hai.demoapplock.adapter.ApplockRecyclerAdapter;
 import com.example.ha_hai.demoapplock.model.App;
 import com.example.ha_hai.demoapplock.model.AppDao;
+import com.skydoves.colorpickerpreference.ColorEnvelope;
+import com.skydoves.colorpickerpreference.ColorListener;
+import com.skydoves.colorpickerpreference.ColorPickerDialog;
 
 import org.greenrobot.greendao.Property;
 import org.greenrobot.greendao.query.Query;
@@ -40,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 
 import static com.example.ha_hai.demoapplock.Common.CommonAttributte.ISLAUNCHING;
 import static com.example.ha_hai.demoapplock.Common.CommonAttributte.NAME_PREFERENCE;
@@ -179,7 +188,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         if (id == R.id.it_unLockAll) {
-            for (App app: applist) {
+            for (App app : applist) {
                 app.setState(0);
             }
             adapter.notifyDataSetChanged();
@@ -187,7 +196,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         if (id == R.id.it_lockAll) {
-            for (App app: applist) {
+            for (App app : applist) {
                 app.setState(1);
             }
             adapter.notifyDataSetChanged();
@@ -207,9 +216,9 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_app_lock) {
             // Handle the camera action
         } else if (id == R.id.nav_photo_video_vault) {
-
+            startActivity(new Intent(MainActivity.this, LockImageActivity.class));
         } else if (id == R.id.nav_background) {
-
+            showColorPickerDialog();
         } else if (id == R.id.nav_theme) {
 
         } else if (id == R.id.nav_fake_cover) {
@@ -360,4 +369,31 @@ public class MainActivity extends AppCompatActivity
         txtHeaderDropDown.setText(textHeader);
         dropDownView.collapseDropDown();
     }
+
+    private void showColorPickerDialog() {
+        ColorPickerDialog.Builder builder = new ColorPickerDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+        builder.setTitle("ColorPicker Dialog");
+        builder.setPreferenceName("MyColorPickerDialog");
+        builder.setFlagView(new CustomFlag(this, R.layout.layout_flag));
+        builder.setPositiveButton("confirm", new ColorListener() {
+            @Override
+            public void onColorSelected(ColorEnvelope colorEnvelope) {
+                Random rnd = new Random();
+                int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+
+                GradientDrawable gd = new GradientDrawable(
+                        GradientDrawable.Orientation.TOP_BOTTOM, new int[] {colorEnvelope.getColor(), colorEnvelope.getColor() + 1000});
+                gd.setCornerRadius(0f);
+
+            }
+        });
+        builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        builder.show();
+    }
+
 }
