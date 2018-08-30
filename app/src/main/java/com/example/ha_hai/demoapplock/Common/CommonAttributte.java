@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.example.ha_hai.demoapplock.model.AppDao;
 import com.example.ha_hai.demoapplock.model.DaoSession;
+import com.example.ha_hai.demoapplock.model.ImageDao;
 import com.example.ha_hai.demoapplock.util.ApplicationUlti;
 
 /**
@@ -12,6 +13,8 @@ import com.example.ha_hai.demoapplock.util.ApplicationUlti;
  */
 
 public class CommonAttributte {
+
+    private static DaoSession daoSession;
 
     public static final String QUESTION = "question";
     public static final String PASSWORD = "password";
@@ -23,4 +26,22 @@ public class CommonAttributte {
         AppDao appDao = daoSession.getAppDao();
         return appDao;
     }
+
+//    public static DaoSession get(Activity context) {
+//        if (daoSession == null) {
+//            daoSession = ((ApplicationUlti) context.getApplication()).getDaoSession();
+//        }
+//        return daoSession;
+//    }
+//
+//
+//    public static AppDao getAppDao() {
+//        AppDao appDao = daoSession.getAppDao();
+//        return appDao;
+//    }
+//
+//    public static ImageDao getImageDao() {
+//        ImageDao imageDao = daoSession.getImageDao();
+//        return imageDao;
+//    }
 }

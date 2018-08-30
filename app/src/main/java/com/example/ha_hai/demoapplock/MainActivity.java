@@ -18,14 +18,9 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.text.TextUtils;
-import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -35,8 +30,13 @@ import android.widget.TextView;
 import com.anthonyfdev.dropdownview.DropDownView;
 import com.example.ha_hai.demoapplock.Common.CommonAttributte;
 import com.example.ha_hai.demoapplock.adapter.ApplockRecyclerAdapter;
+import com.example.ha_hai.demoapplock.adapter.DialogAdapter;
+import com.example.ha_hai.demoapplock.interfaces.DialogClickListener;
 import com.example.ha_hai.demoapplock.model.App;
 import com.example.ha_hai.demoapplock.model.AppDao;
+import com.example.ha_hai.demoapplock.util.RecyclerItemDecorationForApp;
+import com.orhanobut.dialogplus.DialogPlus;
+import com.orhanobut.dialogplus.ListHolder;
 import com.skydoves.colorpickerpreference.ColorEnvelope;
 import com.skydoves.colorpickerpreference.ColorListener;
 import com.skydoves.colorpickerpreference.ColorPickerDialog;
@@ -45,6 +45,7 @@ import org.greenrobot.greendao.Property;
 import org.greenrobot.greendao.query.Query;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -54,8 +55,7 @@ import static com.example.ha_hai.demoapplock.Common.CommonAttributte.ISLAUNCHING
 import static com.example.ha_hai.demoapplock.Common.CommonAttributte.NAME_PREFERENCE;
 import static com.example.ha_hai.demoapplock.util.ConvertDrawableToBitmap.convertToBitmap;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, SearchView.OnQueryTextListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, SearchView.OnQueryTextListener, DialogClickListener {
 
     private RecyclerView recyclerView;
     private ApplockRecyclerAdapter adapter;
@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity
     private PackageManager packageManager;
     private AppDao appDao;
     private List<App> applist;
+    private DialogPlus dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,15 +130,7 @@ public class MainActivity extends AppCompatActivity
     private void setupLayout() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         collapsedView = LayoutInflater.from(this).inflate(R.layout.layout_collapsed_view, null, false);
         expandedView = LayoutInflater.from(this).inflate(R.layout.layout_expanded_view, null, false);
@@ -153,10 +146,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else if (!searchView.isIconified()) {
+       if (!searchView.isIconified()) {
             searchView.setIconified(true);
         } else {
             super.onBackPressed();
@@ -184,56 +174,11 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            showDialogPlus();
             return true;
         }
 
-        if (id == R.id.it_unLockAll) {
-            for (App app : applist) {
-                app.setState(0);
-            }
-            adapter.notifyDataSetChanged();
-            appDao.updateInTx(applist);
-        }
-
-        if (id == R.id.it_lockAll) {
-            for (App app : applist) {
-                app.setState(1);
-            }
-            adapter.notifyDataSetChanged();
-            appDao.updateInTx(applist);
-        }
-
-
         return super.onOptionsItemSelected(item);
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_app_lock) {
-            // Handle the camera action
-        } else if (id == R.id.nav_photo_video_vault) {
-            startActivity(new Intent(MainActivity.this, LockImageActivity.class));
-        } else if (id == R.id.nav_background) {
-            showColorPickerDialog();
-        } else if (id == R.id.nav_theme) {
-
-        } else if (id == R.id.nav_fake_cover) {
-
-        } else if (id == R.id.nav_setting) {
-
-        } else if (id == R.id.nav_about) {
-
-        } else if (id == R.id.nav_share) {
-
-        }
-
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
     }
 
     @Override
@@ -260,11 +205,34 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
     @Override
     public boolean onQueryTextSubmit(String query) {
         searchView.setIconified(true);
         return true;
+    }
+
+    private void showDialogPlus() {
+
+        List<String> items = Arrays.asList( getResources().getStringArray(R.array.list_action_menu));
+        DialogAdapter adapter = new DialogAdapter(MainActivity.this, this, items);
+        dialog = DialogPlus.newDialog(this)
+                .setAdapter(adapter)
+                .setContentHolder(new ListHolder())
+                .setGravity(Gravity.TOP)
+                .setCancelable(true)
+                .setExpanded(false, 570)
+                .setPadding(40,40, 40, 0)
+                .setHeader(R.layout.item_row_header)
+                .setExpanded(false)  // This will enable the expand feature, (similar to android L share dialog)
+                .create();
+        dialog.show();
+
+        dialog.getHeaderView().findViewById(R.id.imgClose).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
     }
 
     @Override
@@ -273,6 +241,31 @@ public class MainActivity extends AppCompatActivity
         adapter.setItems(items);
 
         return true;
+    }
+
+    @Override
+    public void onDialogClick(int position) {
+
+        dialog.dismiss();
+        switch (position) {
+            case 1:
+                for (App app : applist) {
+                    app.setState(1);
+                }
+                adapter.notifyDataSetChanged();
+                appDao.updateInTx(applist);
+                break;
+            case 3:
+                for (App app : applist) {
+                    app.setState(0);
+                }
+                adapter.notifyDataSetChanged();
+                appDao.updateInTx(applist);
+                break;
+            case 5:
+                startActivity(new Intent(MainActivity.this, LockImageActivity.class));
+                break;
+        }
     }
 
     private class LoadApplications extends AsyncTask<Void, Void, Void> {
@@ -358,7 +351,7 @@ public class MainActivity extends AppCompatActivity
     private void setAdapter() {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        recyclerView.addItemDecoration(new RecyclerItemDecorationForApp(MainActivity.this, 1, true));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         adapter = new ApplockRecyclerAdapter(applist, this);
         recyclerView.setAdapter(adapter);

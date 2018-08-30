@@ -75,17 +75,41 @@ public class ApplockRecyclerAdapter extends RecyclerView.Adapter<ApplockRecycler
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    App app = items.get(getAdapterPosition());
-                    if (binding.imglock.isChecked()) {
-                        binding.imglock.setChecked(false);
-                        app.setState(0);
-                    } else {
-                        binding.imglock.setChecked(true);
-                        app.setState(1);
-                    }
-                    CommonAttributte.getAppDao(mActivity).update(app);
+                    updateAppClickRootView(binding, getAdapterPosition());
                 }
             });
+
+            binding.imglock.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    updateAppClickCheckBox(binding, getAdapterPosition());
+                }
+            });
+
         }
+    }
+
+    private void updateAppClickRootView(ItemRowBinding binding, int position) {
+        App app = items.get(position);
+        if (binding.imglock.isChecked()) {
+            binding.imglock.setChecked(false);
+            app.setState(0);
+        } else {
+            binding.imglock.setChecked(true);
+            app.setState(1);
+        }
+        CommonAttributte.getAppDao(mActivity).update(app);
+    }
+
+    private void updateAppClickCheckBox(ItemRowBinding binding, int position) {
+        App app = items.get(position);
+        if (binding.imglock.isChecked()) {
+            binding.imglock.setChecked(true);
+            app.setState(1);
+        } else {
+            binding.imglock.setChecked(false);
+            app.setState(0);
+        }
+        CommonAttributte.getAppDao(mActivity).update(app);
     }
 }

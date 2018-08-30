@@ -12,7 +12,10 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="4dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginLeft="12dp"
         android:background="?attr/selectableItemBackground"
         android:gravity="center_vertical"
         android:clickable="true">
@@ -23,7 +26,6 @@
             android:layout_height="48dp"
             android:layout_centerVertical="true"
             android:layout_marginBottom="4dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginRight="4dp"
             android:layout_marginTop="4dp"
             android:src="@mipmap/ic_launcher"
@@ -47,7 +49,6 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:button="@null"
-            android:layout_margin="4dp"
             bind:lockImage="@{App.state}"
             android:background="@drawable/custom_drawable_ic_lock" />
     </RelativeLayout>
