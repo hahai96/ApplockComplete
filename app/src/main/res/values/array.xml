@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="list_action_menu">
+        <item >l</item>
+        <item >Lock all</item>
+        <item >l</item>
+        <item >Unlock All</item>
+        <item >l</item>
+        <item >Photo Vault</item>
+        <item >l</item>
+        <item >Fake Cover</item>
+        <item >l</item>
+        <item >Custom Theme</item>
+        <item >l</item>
+        <item >Setting</item>
+        <item >l</item>
+        <item >About</item>
+    </string-array>
+
+</resources>
