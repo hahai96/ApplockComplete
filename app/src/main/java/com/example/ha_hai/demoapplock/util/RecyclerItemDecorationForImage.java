@@ -59,8 +59,6 @@ public class RecyclerItemDecorationForImage extends RecyclerView.ItemDecoration 
             String title = sectionCallback.getSectionHeader(position);
             header.setText(title);
             if (!previousHeader.equals(title) || sectionCallback.isSection(position)) {
-                Log.d("AAA", "position: " + position + " - title: " + title + " - previousHeader: " + previousHeader);
-
                 drawHeader(c, child, headerView);
                 previousHeader = title;
             }
