@@ -21,27 +21,27 @@ public class CommonAttributte {
     public static final String ISLAUNCHING = "isLaunching";
     public static final String NAME_PREFERENCE = "my_data";
 
-    public static AppDao getAppDao(Activity context) {
-        DaoSession daoSession = ((ApplicationUlti) context.getApplication()).getDaoSession();
+//    public static AppDao getAppDao(Activity context) {
+//        DaoSession daoSession = ((ApplicationUlti) context.getApplication()).getDaoSession();
+//        AppDao appDao = daoSession.getAppDao();
+//        return appDao;
+//    }
+
+    public static DaoSession get(Activity context) {
+        if (daoSession == null) {
+            daoSession = ((ApplicationUlti) context.getApplication()).getDaoSession();
+        }
+        return daoSession;
+    }
+
+
+    public static AppDao getAppDao() {
         AppDao appDao = daoSession.getAppDao();
         return appDao;
     }
 
-//    public static DaoSession get(Activity context) {
-//        if (daoSession == null) {
-//            daoSession = ((ApplicationUlti) context.getApplication()).getDaoSession();
-//        }
-//        return daoSession;
-//    }
-//
-//
-//    public static AppDao getAppDao() {
-//        AppDao appDao = daoSession.getAppDao();
-//        return appDao;
-//    }
-//
-//    public static ImageDao getImageDao() {
-//        ImageDao imageDao = daoSession.getImageDao();
-//        return imageDao;
-//    }
+    public static ImageDao getImageDao() {
+        ImageDao imageDao = daoSession.getImageDao();
+        return imageDao;
+    }
 }

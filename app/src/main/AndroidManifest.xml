@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.ha_hai.demoapplock">
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name=".util.ApplicationUlti"
@@ -24,7 +24,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".CustomThemeActivity" />
-        <activity android:name=".LockImageActivity"></activity>
+        <activity android:name=".LockImageActivity" />
+        <activity android:name=".ImageDetailActivity"></activity>
     </application>
 
 </manifest>

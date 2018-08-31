@@ -11,10 +11,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.Toast;
+import android.util.Log;
 
 import com.example.ha_hai.demoapplock.Common.CommonAttributte;
 import com.example.ha_hai.demoapplock.adapter.ImageAdapter;
+import com.example.ha_hai.demoapplock.interfaces.SectionCallback;
 import com.example.ha_hai.demoapplock.model.Image;
 import com.example.ha_hai.demoapplock.model.ImageDao;
 import com.example.ha_hai.demoapplock.util.RecyclerItemDecorationForImage;
@@ -24,6 +25,7 @@ import com.karumi.dexter.listener.PermissionDeniedResponse;
 import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
+
 
 import org.greenrobot.greendao.query.Query;
 
@@ -38,8 +40,8 @@ public class LockImageActivity extends AppCompatActivity {
 
     private ArrayList<Image> images;
     private RecyclerView recyclerView;
-//    private ImageDao imageDao;
-//    private Query<Image>
+    private ImageDao imageDao;
+    private Query query;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,18 +50,11 @@ public class LockImageActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerView);
 
-//        imageDao = CommonAttributte.get(LockImageActivity.this).getImageDao();
+        imageDao = CommonAttributte.get(LockImageActivity.this).getImageDao();
+
+        query = imageDao.queryBuilder().build();
 
         requestPermission();
-
-//        gallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//
-//            @Override
-//            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-//                if (null != images && !images.isEmpty())
-//                    Toast.makeText(LockImageActivity.this, "position " + position + " " + images.get(position), Toast.LENGTH_SHORT).show();
-//            }
-//        });
     }
 
     private void requestPermission() {
@@ -69,21 +64,7 @@ public class LockImageActivity extends AppCompatActivity {
                     @Override
                     public void onPermissionGranted(PermissionGrantedResponse response) {
                         // permission is granted, open the camera
-                        Toast.makeText(getApplicationContext(), "All permissions are granted!", Toast.LENGTH_SHORT).show();
-
-
-                        images = getAllShownImagesPath(LockImageActivity.this);
-
-                        recyclerView.setHasFixedSize(true);
-                        GridLayoutManager layoutManager = new GridLayoutManager(LockImageActivity.this, 4);
-                        recyclerView.setLayoutManager(layoutManager);
-                        RecyclerItemDecorationForImage itemDecoration = new RecyclerItemDecorationForImage(getResources().getDimensionPixelSize(R.dimen.recycler_section_header_height),
-                                true,
-                                getSectionCallback(images));
-                        recyclerView.addItemDecoration(itemDecoration);
-                        ImageAdapter adapter = new ImageAdapter(images, LockImageActivity.this);
-                        recyclerView.setAdapter(adapter);
-                        adapter.notifyDataSetChanged();
+                        setAdapter();
                     }
 
                     @Override
@@ -121,12 +102,48 @@ public class LockImageActivity extends AppCompatActivity {
 
     }
 
-    private ArrayList<Image> getAllShownImagesPath(Activity activity) {
+    private void setAdapter() {
+        //get images from db
+        //get images from device
+
+        images = (ArrayList<Image>) query.list();
+
+        if (images == null || images.size() == 0)
+            getAllShownImagesPath(LockImageActivity.this);
+
+        ArrayList<Image> deleteItems = (ArrayList<Image>) imageDao.queryBuilder().where(ImageDao.Properties.Time.like("%70")).list();
+        for (Image image: deleteItems) {
+            imageDao.delete(image);
+        }
+
+        images = (ArrayList<Image>) query.list();
+
+        recyclerView.setHasFixedSize(true);
+        final SectionCallback sectionCallback = getSectionCallback(images);
+        RecyclerItemDecorationForImage itemDecoration = new RecyclerItemDecorationForImage(getResources().getDimensionPixelSize(R.dimen.recycler_section_header_height),
+                true,
+                sectionCallback);
+        recyclerView.addItemDecoration(itemDecoration);
+        GridLayoutManager layoutManager = new GridLayoutManager(LockImageActivity.this, 4);
+        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                if (!sectionCallback.isImageType(position)) {
+                    return 4;
+                }
+                return 1;
+            }
+        });
+        recyclerView.setLayoutManager(layoutManager);
+        ImageAdapter adapter = new ImageAdapter(images, LockImageActivity.this, sectionCallback);
+        recyclerView.setAdapter(adapter);
+    }
+
+    private void getAllShownImagesPath(Activity activity) {
         Uri uri;
         Cursor cursor;
         int column_index_data, column_index_folder_name;
 
-        ArrayList<Image> listOfAllImages = new ArrayList<>();
         String absolutePathOfImage;
         uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
@@ -137,6 +154,7 @@ public class LockImageActivity extends AppCompatActivity {
         column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
 //        column_index_folder_name = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
 
+        ArrayList<String> listTime = new ArrayList<>();
         while (cursor.moveToNext()) {
             absolutePathOfImage = cursor.getString(column_index_data);
 
@@ -145,17 +163,26 @@ public class LockImageActivity extends AppCompatActivity {
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yy", Locale.ENGLISH);
             String time = dateFormat.format(lastModDate);
 
-            Image image = new Image(absolutePathOfImage, time);
-            listOfAllImages.add(image);
-        }
-        return listOfAllImages;
-    }
+            if (!listTime.contains(time)) {
+                listTime.add(time);
+                Image image = new Image(null, time);
+                imageDao.insert(image);
+            }
 
-    private RecyclerItemDecorationForImage.SectionCallback getSectionCallback(final List<Image> images) {
-        return new RecyclerItemDecorationForImage.SectionCallback() {
+            //insert to db
+            Image image = new Image(absolutePathOfImage, time);
+            imageDao.insert(image);
+        }
+    }
+    private SectionCallback getSectionCallback(final List<Image> images) {
+        return new SectionCallback() {
+
             @Override
-            public boolean isSection(int position) {
-                return position == 0 || !images.get(position).getTime().equals(images.get(position - 1).getTime());
+            public boolean isImageType(int position) {
+                if (images.get(position).getPath() == null) {
+                    return false;
+                }
+                return true;
             }
 
             @Override

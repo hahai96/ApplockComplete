@@ -98,7 +98,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dropDownView.setDropDownListener(dropDownListener);
 
         //init DaoSession
-        appDao = CommonAttributte.getAppDao(this);
+//        appDao = CommonAttributte.getAppDao(this);
+        appDao = CommonAttributte.get(MainActivity.this).getAppDao();
+
 
         preferences = getSharedPreferences(NAME_PREFERENCE, MODE_PRIVATE);
         boolean isLaunching = preferences.getBoolean(ISLAUNCHING, true);

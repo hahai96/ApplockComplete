@@ -98,7 +98,8 @@ public class ApplockRecyclerAdapter extends RecyclerView.Adapter<ApplockRecycler
             binding.imglock.setChecked(true);
             app.setState(1);
         }
-        CommonAttributte.getAppDao(mActivity).update(app);
+//        CommonAttributte.getAppDao(mActivity).update(app);
+        CommonAttributte.get(mActivity).getAppDao().update(app);
     }
 
     private void updateAppClickCheckBox(ItemRowBinding binding, int position) {
@@ -110,6 +111,7 @@ public class ApplockRecyclerAdapter extends RecyclerView.Adapter<ApplockRecycler
             binding.imglock.setChecked(false);
             app.setState(0);
         }
-        CommonAttributte.getAppDao(mActivity).update(app);
+//        CommonAttributte.getAppDao(mActivity).update(app);
+        CommonAttributte.get(mActivity).getAppDao().update(app);
     }
 }
